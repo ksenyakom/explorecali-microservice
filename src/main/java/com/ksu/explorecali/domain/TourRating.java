@@ -1,37 +1,36 @@
 package com.ksu.explorecali.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-
-import java.util.Objects;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Rating of a Tour by a Customer
- *
+ * <p>
  * Created by Mary Ellen Bowman
  */
-@Entity
+@Document
 public class TourRating {
 
-    @EmbeddedId
-    private TourRatingPk pk;
+    @Id
+    private String id;
 
-    @Column(nullable = false)
+    private String tourId;
+
+    private Integer customerId;
+
+    @Min(0)
+    @Max(5)
     private Integer score;
 
-    @Column
+    @Size(max = 255)
     private String comment;
 
-    /**
-     * Create a fully initialized TourRating.
-     *
-     * @param pk         primiary key of a tour and customer id.
-     * @param score      Integer score (1-5)
-     * @param comment    Optional comment from the customer
-     */
-    public TourRating(TourRatingPk pk, Integer score, String comment) {
-        this.pk = pk;
+    public TourRating(String tourId, Integer customerId, Integer score, String comment) {
+        this.tourId = tourId;
+        this.customerId = customerId;
         this.score = score;
         this.comment = comment;
     }
@@ -40,50 +39,77 @@ public class TourRating {
     }
 
     @Override
-    public String toString() {
-        return "TourRating{" +
-                "pk=" + pk +
-                ", score=" + score +
-                ", comment='" + comment + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TourRating that = (TourRating) o;
-        return Objects.equals(pk, that.pk) &&
-                Objects.equals(score, that.score) &&
-                Objects.equals(comment, that.comment);
+
+        TourRating rating = (TourRating) o;
+
+        if (id != null ? !id.equals(rating.id) : rating.id != null) return false;
+        if (tourId != null ? !tourId.equals(rating.tourId) : rating.tourId != null) return false;
+        if (customerId != null ? !customerId.equals(rating.customerId) : rating.customerId != null) return false;
+        if (score != null ? !score.equals(rating.score) : rating.score != null) return false;
+        return comment != null ? comment.equals(rating.comment) : rating.comment == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pk, score, comment);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (tourId != null ? tourId.hashCode() : 0);
+        result = 31 * result + (customerId != null ? customerId.hashCode() : 0);
+        result = 31 * result + (score != null ? score.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        return result;
     }
 
-    public TourRatingPk getPk() {
-        return pk;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getTourId() {
+        return tourId;
+    }
+
+    public void setTourId(String tourId) {
+        this.tourId = tourId;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
     public Integer getScore() {
         return score;
     }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public void setPk(TourRatingPk pk) {
-        this.pk = pk;
-    }
-
     public void setScore(Integer score) {
         this.score = score;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    public String toString() {
+        return "TourRating{" +
+                "id='" + id + '\'' +
+                ", tourId='" + tourId + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", score=" + score +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 }
